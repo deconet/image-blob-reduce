@@ -5,6 +5,7 @@ const utils = require('./lib/utils')
 const pica = require('pica')
 
 function ImageBlobReduce (options) {
+  console.log('ImageBlobReduce()', options)
   if (!(this instanceof ImageBlobReduce)) return new ImageBlobReduce(options)
 
   options = options || {}
@@ -22,6 +23,7 @@ ImageBlobReduce.prototype.use = function (plugin /*, params, ... */) {
 }
 
 ImageBlobReduce.prototype.init = function () {
+  console.log('init')
   this.use(require('./lib/jpeg_plugins').assign)
 }
 
