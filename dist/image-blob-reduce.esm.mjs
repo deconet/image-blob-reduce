@@ -1,6 +1,6 @@
 
 /*! image-blob-reduce 2.2.2 https://github.com/nodeca/image-blob-reduce @license MIT */
-var assign = function assign(to) {
+var assign$1 = function assign(to) {
   var from;
 
   for (var s = 1; s < arguments.length; s++) {
@@ -41,7 +41,7 @@ var pick_1 = pick;
 var pick_pica_resize_options_1 = pick_pica_resize_options;
 
 var utils = {
-	assign: assign,
+	assign: assign$1,
 	pick: pick_1,
 	pick_pica_resize_options: pick_pica_resize_options_1
 };
@@ -3089,7 +3089,7 @@ function jpeg_attach_orig_segments(env) {
 }
 
 
-function assign$1(reducer) {
+function assign(reducer) {
   reducer.before('_blob_to_image', jpeg_patch_exif);
   reducer.after('_transform',      jpeg_rotate_canvas);
   reducer.after('_create_blob',    jpeg_attach_orig_segments);
@@ -3099,7 +3099,7 @@ function assign$1(reducer) {
 var jpeg_patch_exif_1 = jpeg_patch_exif;
 var jpeg_rotate_canvas_1 = jpeg_rotate_canvas;
 var jpeg_attach_orig_segments_1 = jpeg_attach_orig_segments;
-var assign_1 = assign$1;
+var assign_1 = assign;
 
 var jpeg_plugins = {
 	jpeg_patch_exif: jpeg_patch_exif_1,
@@ -3108,8 +3108,9 @@ var jpeg_plugins = {
 	assign: assign_1
 };
 
-function ImageBlobReduce(options) {
-  if (!(this instanceof ImageBlobReduce)) return new ImageBlobReduce(options);
+function ImageBlobReduce (options) {
+  console.log('ImageBlobReduce()', options);
+  if (!(this instanceof ImageBlobReduce)) return new ImageBlobReduce(options)
 
   options = options || {};
 
@@ -3119,22 +3120,21 @@ function ImageBlobReduce(options) {
   this.utils = utils;
 }
 
-
 ImageBlobReduce.prototype.use = function (plugin /*, params, ... */) {
-  var args = [ this ].concat(Array.prototype.slice.call(arguments, 1));
+  const args = [this].concat(Array.prototype.slice.call(arguments, 1));
   plugin.apply(plugin, args);
-  return this;
+  return this
 };
 
-
 ImageBlobReduce.prototype.init = function () {
+  console.log('init');
   this.use(jpeg_plugins.assign);
 };
 
-
 ImageBlobReduce.prototype.toBlob = function (blob, options) {
-  var opts = utils.assign({ max: Infinity }, options);
-  var env = {
+  console.log('ImageBlobReduce.prototype.toBlob');
+  const opts = utils.assign({ max: Infinity }, options);
+  const env = {
     blob: blob,
     opts: opts
   };
@@ -3155,14 +3155,13 @@ ImageBlobReduce.prototype.toBlob = function (blob, options) {
       // https://github.com/nodeca/pica/issues/199
       _env.out_canvas.width = _env.out_canvas.height = 0;
 
-      return _env.out_blob;
-    });
+      return _env.out_blob
+    })
 };
 
-
 ImageBlobReduce.prototype.toCanvas = function (blob, options) {
-  var opts = utils.assign({ max: Infinity }, options);
-  var env = {
+  const opts = utils.assign({ max: Infinity }, options);
+  const env = {
     blob: blob,
     opts: opts
   };
@@ -3177,46 +3176,44 @@ ImageBlobReduce.prototype.toCanvas = function (blob, options) {
     .then(this._calculate_size)
     .then(this._transform)
     .then(this._cleanup)
-    .then(function (_env) { return _env.out_canvas; });
+    .then(function (_env) { return _env.out_canvas })
 };
 
-
 ImageBlobReduce.prototype.before = function (method_name, fn) {
-  if (!this[method_name]) throw new Error('Method "' + method_name + '" does not exist');
-  if (typeof fn !== 'function') throw new Error('Invalid argument "fn", function expected');
+  if (!this[method_name]) throw new Error('Method "' + method_name + '" does not exist')
+  if (typeof fn !== 'function') throw new Error('Invalid argument "fn", function expected')
 
-  var old_fn = this[method_name];
-  var self = this;
+  const old_fn = this[method_name];
+  const self = this;
 
   this[method_name] = function (env) {
     return fn.call(self, env).then(function (_env) {
-      return old_fn.call(self, _env);
-    });
+      return old_fn.call(self, _env)
+    })
   };
 
-  return this;
+  return this
 };
 
-
 ImageBlobReduce.prototype.after = function (method_name, fn) {
-  if (!this[method_name]) throw new Error('Method "' + method_name + '" does not exist');
-  if (typeof fn !== 'function') throw new Error('Invalid argument "fn", function expected');
+  if (!this[method_name]) throw new Error('Method "' + method_name + '" does not exist')
+  if (typeof fn !== 'function') throw new Error('Invalid argument "fn", function expected')
 
-  var old_fn = this[method_name];
-  var self = this;
+  const old_fn = this[method_name];
+  const self = this;
 
   this[method_name] = function (env) {
     return old_fn.call(self, env).then(function (_env) {
-      return fn.call(self, _env);
-    });
+      return fn.call(self, _env)
+    })
   };
 
-  return this;
+  return this
 };
 
-
 ImageBlobReduce.prototype._blob_to_image = function (env) {
-  var URL = window.URL || window.webkitURL || window.mozURL || window.msURL;
+  console.log('_blob_to_image');
+  const URL = window.URL || window.webkitURL || window.mozURL || window.msURL;
 
   env.image = document.createElement('img');
   env.image_url = URL.createObjectURL(env.blob);
@@ -3225,16 +3222,16 @@ ImageBlobReduce.prototype._blob_to_image = function (env) {
   return new Promise(function (resolve, reject) {
     env.image.onerror = function () { reject(new Error('ImageBlobReduce: failed to create Image() from blob')); };
     env.image.onload = function () { resolve(env); };
-  });
+  })
 };
 
-
 ImageBlobReduce.prototype._calculate_size = function (env) {
+  console.log('_calculate_size');
   //
   // Note, if your need not "symmetric" resize logic, you MUST check
   // `env.orientation` (set by plugins) and swap width/height appropriately.
   //
-  var scale_factor = env.opts.max / Math.max(env.image.width, env.image.height);
+  let scale_factor = env.opts.max / Math.max(env.image.width, env.image.height);
 
   if (scale_factor > 1) scale_factor = 1;
 
@@ -3244,11 +3241,11 @@ ImageBlobReduce.prototype._calculate_size = function (env) {
   // Info for user plugins, to check if scaling applied
   env.scale_factor = scale_factor;
 
-  return Promise.resolve(env);
+  return Promise.resolve(env)
 };
 
-
 ImageBlobReduce.prototype._transform = function (env) {
+  console.log('_transform');
   env.out_canvas = this.pica.options.createCanvas(env.transform_width, env.transform_height);
 
   // Dim env temporary vars to prohibit use and avoid confusion when orientation
@@ -3257,48 +3254,46 @@ ImageBlobReduce.prototype._transform = function (env) {
   env.transform_height = null;
 
   // By default use alpha for png only
-  var pica_opts = { alpha: env.blob.type === 'image/png' };
+  const pica_opts = { alpha: env.blob.type === 'image/png' };
 
   // Extract pica options if been passed
   this.utils.assign(pica_opts, this.utils.pick_pica_resize_options(env.opts));
 
   return this.pica
     .resize(env.image, env.out_canvas, pica_opts)
-    .then(function () { return env; });
+    .then(function () { return env })
 };
 
-
 ImageBlobReduce.prototype._cleanup = function (env) {
+  console.log('_cleanup');
   env.image.src = '';
   env.image = null;
 
-  var URL = window.URL || window.webkitURL || window.mozURL || window.msURL;
+  const URL = window.URL || window.webkitURL || window.mozURL || window.msURL;
   if (URL.revokeObjectURL) URL.revokeObjectURL(env.image_url);
 
   env.image_url = null;
 
-  return Promise.resolve(env);
+  return Promise.resolve(env)
 };
-
 
 ImageBlobReduce.prototype._create_blob = function (env) {
   return this.pica.toBlob(env.out_canvas, env.blob.type)
     .then(function (blob) {
       env.out_blob = blob;
-      return env;
-    });
+      return env
+    })
 };
-
 
 ImageBlobReduce.prototype._getUint8Array = function (blob) {
   if (blob.arrayBuffer) {
     return blob.arrayBuffer().then(function (buf) {
-      return new Uint8Array(buf);
-    });
+      return new Uint8Array(buf)
+    })
   }
 
   return new Promise(function (resolve, reject) {
-    var fr = new FileReader();
+    const fr = new FileReader();
 
     fr.readAsArrayBuffer(blob);
 
@@ -3310,9 +3305,8 @@ ImageBlobReduce.prototype._getUint8Array = function (blob) {
     fr.onabort = function () {
       reject(new Error('ImageBlobReduce: failed to load data from input blob (aborted)'));
     };
-  });
+  })
 };
-
 
 ImageBlobReduce.pica = pica;
 

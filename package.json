@@ -37,7 +37,8 @@
     "prepublishOnly": "npm run gh-pages"
   },
   "dependencies": {
-    "pica": "^6.1.1"
+    "pica": "^6.1.1",
+    "rollup": "^2.40.0"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^17.0.0",
@@ -46,7 +47,6 @@
     "electron-mocha": "^10.0.0",
     "eslint": "^7.2.0",
     "gh-pages": "^3.0.0",
-    "rollup": "^2.29.0",
     "rollup-plugin-terser": "^7.0.2",
     "shelljs": "^0.8.4"
   }
